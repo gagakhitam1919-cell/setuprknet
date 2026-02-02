@@ -5,22 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RKNET | Infrastructure System Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
     <style>
         :root { --rk-navy: #0f172a; --rk-blue: #2563eb; --rk-emerald: #10b981; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; color: var(--rk-navy); -webkit-tap-highlight-color: transparent; }
         header { background: var(--rk-navy); padding: 50px 20px 75px; text-align: center; position: relative; border-bottom: 5px solid var(--rk-blue); border-radius: 0 0 45px 45px; }
-        .logo { font-size: 34px; font-weight: 800; color: #ffffff; letter-spacing: -1.5px; }
-        .logo span { color: #3b82f6; }
+        
+        .logo-chrome {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 3.5rem; font-weight: 900; font-style: italic; letter-spacing: -2px; line-height: 1;
+            background: linear-gradient(180deg, #001d3d 0%, #0061ff 45%, #ffffff 50%, #94a3b8 55%, #001d3d 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5));
+            display: inline-block;
+        }
+
         .server-status { position: absolute; top: 15px; right: 20px; display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(16, 185, 129, 0.2); }
         .dot { height: 8px; width: 8px; background-color: var(--rk-emerald); border-radius: 50%; box-shadow: 0 0 10px var(--rk-emerald); animation: pulse 1.5s infinite; }
         .wrapper { max-width: 480px; margin: -55px auto 40px; padding: 0 18px; }
         .card { background: #ffffff; border-radius: 28px; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; border: 1px solid rgba(226, 232, 240, 0.7); }
         .card-header { background: #f8fafc; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 2px; }
-        .progress-track { height: 6px; width: 100%; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin: 15px 0; }
-        .progress-fill { height: 100%; width: 0%; background: var(--rk-blue); transition: width 0.4s ease; }
         
-        /* DIAGNOSTIC GRID */
         .diag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; margin: 20px 0; }
         .diag-item { background: #ffffff; padding: 14px; }
         .diag-label { font-size: 8px; font-weight: 700; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 2px; }
@@ -36,14 +41,30 @@
         .copy-pill:active { background: var(--rk-blue); color: white; }
 
         .tech-card { display: flex; align-items: center; gap: 14px; padding: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; margin-bottom: 12px; text-decoration: none; color: white; }
+
+        /* CUSTOM MODAL */
+        #custom-alert { position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 320px; border-radius: 30px; padding: 30px; text-align: center; transform: scale(0.9); transition: 0.3s; }
+        .modal-box.show { transform: scale(1); }
+        .modal-icon { width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; }
+        
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     </style>
 </head>
 <body>
 
+    <div id="custom-alert">
+        <div class="modal-box" id="modal-box">
+            <div id="modal-icon" class="modal-icon"></div>
+            <h3 id="modal-title" class="font-900 text-[16px] mb-2 uppercase tracking-tight">Pesan</h3>
+            <p id="modal-desc" class="text-[12px] text-slate-500 font-600 leading-relaxed mb-6"></p>
+            <button onclick="closeModal()" class="w-full bg-slate-900 text-white py-3 rounded-2xl font-800 text-[11px] tracking-widest uppercase">MENGERTI</button>
+        </div>
+    </div>
+
     <header>
         <div class="server-status"><span class="dot"></span><span style="color: #10b981; font-size: 9px; font-weight: 800;">SERVER ONLINE</span></div>
-        <div class="logo">RK<span>NET</span></div>
+        <div class="logo-chrome">RKNET</div>
         <p style="color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 5px; margin-top: 10px;">Security Sistem Jaringan </p>
     </header>
 
@@ -51,20 +72,12 @@
         <div class="card">
             <div class="card-header flex justify-between"><span>Audit & Diagnostik</span><span id="load-text" class="text-blue-600">SCANNING...</span></div>
             <div class="p-6">
-                <div class="progress-track"><div id="progress-bar" class="progress-fill"></div></div>
-                
-                <div id="status-alert" class="hidden p-4 rounded-2xl mb-5 text-center">
-                    <p id="status-msg" class="text-[11px] font-800"></p>
-                </div>
-
+                <div class="h-[6px] w-full bg-slate-100 rounded-full overflow-hidden mb-6"><div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500 w-0"></div></div>
                 <div class="diag-grid">
                     <div class="diag-item"><span class="diag-label">IP Address</span><div id="ip-res" class="diag-value">---.---.---.---</div></div>
-                    <div class="diag-item"><span class="diag-label">Subnet Mask</span><div class="diag-value">255.255.255.0</div></div>
-                    <div class="diag-item"><span class="diag-label">DNS Server</span><div id="dns-res" class="diag-value">8.8.8.8 (Google)</div></div>
-                    <div class="diag-item"><span class="diag-label">Gateway Node</span><div id="node-res" class="diag-value">MENCARI...</div></div>
-                    <div class="diag-item" style="grid-column: span 2;"><span class="diag-label">Tipe Perangkat / Browser</span><div id="device-res" class="diag-value">Detecting Device...</div></div>
+                    <div class="diag-item"><span class="diag-label">DNS Server</span><div id="dns-res" class="diag-value">8.8.8.8</div></div>
+                    <div class="diag-item" style="grid-column: span 2;"><span class="diag-label">Gateway Node</span><div id="node-res" class="diag-value">MENCARI...</div></div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4 mt-2">
                     <div onclick="checkGate('192.168.1.1')" id="g1" class="gate-btn">🌏 <span class="text-[12px] font-800 block mt-1">GATEWAY 1</span></div>
                     <div onclick="checkGate('192.168.0.1')" id="g2" class="gate-btn">🌏 <span class="text-[12px] font-800 block mt-1">GATEWAY 2</span></div>
@@ -75,27 +88,12 @@
         <div class="card">
             <div class="card-header">Panduan Konfigurasi (6 Langkah)</div>
             <div class="p-6">
-                <div class="guide-step">
-                    <div class="step-num">01</div>
-                    <p class="text-[11px] font-600">Matikan **Data Seluler** ponsel Anda terlebih dahulu.</p>
-                </div>
-                <div class="guide-step">
-                    <div class="step-num">02</div>
-                    <p class="text-[11px] font-600">Sambungkan WiFi ke sinyal **RKNET** atau Router lokal.</p>
-                </div>
-                <div class="guide-step">
-                    <div class="step-num">03</div>
-                    <p class="text-[11px] font-600">Buka Browser dan pastikan audit di atas berstatus **STABIL**.</p>
-                </div>
-                <div class="guide-step">
-                    <div class="step-num">04</div>
-                    <p class="text-[11px] font-600">Klik tombol **Gateway** di atas yang berwarna Biru.</p>
-                </div>
+                <div class="guide-step"><div class="step-num">01</div><p class="text-[11px] font-600">Matikan **Data Seluler** ponsel Anda terlebih dahulu.</p></div>
+                <div class="guide-step"><div class="step-num">02</div><p class="text-[11px] font-600">Sambungkan WiFi ke sinyal **RKNET** atau Router lokal.</p></div>
+                <div class="guide-step"><div class="step-num">03</div><p class="text-[11px] font-600">Buka Browser dan pastikan audit di atas berstatus **STABIL**.</p></div>
+                <div class="guide-step"><div class="step-num">04</div><p class="text-[11px] font-600">Klik tombol **Gateway** di atas yang berwarna Biru.</p></div>
                 <div class="guide-step flex-col">
-                    <div class="flex gap-4">
-                        <div class="step-num">05</div>
-                        <p class="text-[11px] font-600">Salin Kredensial Login berikut untuk masuk:</p>
-                    </div>
+                    <div class="flex gap-4"><div class="step-num">05</div><p class="text-[11px] font-600">Salin Kredensial Login berikut untuk masuk:</p></div>
                     <div class="grid grid-cols-2 gap-2 mt-3 ml-11">
                         <button onclick="copy('admin')" class="copy-pill">admin</button>
                         <button onclick="copy('user')" class="copy-pill">user</button>
@@ -103,10 +101,7 @@
                         <button onclick="copy('user1234')" class="copy-pill">user1234</button>
                     </div>
                 </div>
-                <div class="guide-step border-none">
-                    <div class="step-num">06</div>
-                    <p class="text-[11px] font-600">Ubah Nama WiFi/Sandi di menu Wireless, lalu klik **Save**.</p>
-                </div>
+                <div class="guide-step border-none"><div class="step-num">06</div><p class="text-[11px] font-600">Ubah Nama WiFi/Sandi di menu Wireless, lalu klik **Save**.</p></div>
             </div>
         </div>
 
@@ -134,15 +129,34 @@
     <script>
         let currentIP = "";
 
-        // Detect Device Info
-        document.getElementById('device-res').innerText = navigator.userAgent.split(') ')[0].split(' (')[1] || "Mobile Device";
+        function showModal(title, desc, type) {
+            const modal = document.getElementById('custom-alert');
+            const box = document.getElementById('modal-box');
+            const icon = document.getElementById('modal-icon');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            if(type === 'error') {
+                icon.innerHTML = "⚠️"; icon.className = "modal-icon bg-rose-50 text-rose-500";
+                document.getElementById('modal-title').className = "font-900 text-[16px] mb-2 uppercase text-rose-600";
+            } else {
+                icon.innerHTML = "✅"; icon.className = "modal-icon bg-emerald-50 text-emerald-500";
+                document.getElementById('modal-title').className = "font-900 text-[16px] mb-2 uppercase text-emerald-600";
+            }
+            modal.style.display = 'flex';
+            setTimeout(() => { box.classList.add('show'); }, 10);
+        }
+
+        function closeModal() {
+            document.getElementById('modal-box').classList.remove('show');
+            setTimeout(() => { document.getElementById('custom-alert').style.display = 'none'; }, 300);
+        }
 
         window.onload = () => {
-            let w = 0; const bar = document.getElementById('progress-bar');
+            let w = 0;
             const timer = setInterval(() => {
                 if(w >= 100) { clearInterval(timer); scan(); document.getElementById('load-text').innerText = "STABIL"; }
-                else { w += 10; bar.style.width = w + '%'; }
-            }, 40);
+                else { w += 10; document.getElementById('progress-bar').style.width = w + '%'; }
+            }, 50);
         };
 
         function scan() {
@@ -153,38 +167,21 @@
                 if (!e || !e.candidate) return;
                 currentIP = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate)[1];
                 document.getElementById('ip-res').innerText = currentIP;
-                
-                const g1 = document.getElementById('g1'); const g2 = document.getElementById('g2');
-
                 if (currentIP.startsWith("192.168.1.")) {
                     document.getElementById('node-res').innerText = "GATEWAY 1.1 (PRIMARY)";
-                    document.getElementById('dns-res').innerText = "1.1.1.1 (Cloudflare)";
-                    g1.classList.add('active');
-                    notify("✅ Jaringan RKNET Terverifikasi", "bg-emerald-50 text-emerald-700 border border-emerald-100");
+                    document.getElementById('g1').classList.add('active');
                 } else if (currentIP.startsWith("192.168.0.")) {
                     document.getElementById('node-res').innerText = "GATEWAY 0.1 (SECONDARY)";
-                    document.getElementById('dns-res').innerText = "8.8.8.8 (Google)";
-                    g2.classList.add('active');
-                    notify("✅ Jaringan RKNET Terverifikasi", "bg-emerald-50 text-emerald-700 border border-emerald-100");
-                } else {
-                    document.getElementById('node-res').innerText = "EXTERNAL NETWORK";
-                    notify("⚠️ PERINGATAN: Matikan Data & Gunakan WiFi", "bg-rose-50 text-rose-700 border border-rose-100");
+                    document.getElementById('g2').classList.add('active');
                 }
             };
-        }
-
-        function notify(t, c) {
-            const el = document.getElementById('status-alert');
-            const msg = document.getElementById('status-msg');
-            el.className = "p-4 rounded-2xl mb-5 text-center " + c;
-            msg.innerText = t; el.style.display = "block";
         }
 
         function checkGate(target) {
             if (currentIP.startsWith(target.substring(0, 10))) {
                 window.location.href = "http://" + target;
             } else {
-                alert("⛔ AKSES DITOLAK\nIP Anda (" + currentIP + ") tidak sesuai dengan gateway ini.\n\nSilakan gunakan tombol yang aktif (Biru).");
+                showModal("Akses Dibatasi", "IP Anda (" + currentIP + ") tidak sesuai. Gunakan tombol Gateway yang berwarna Biru.", "error");
             }
         }
 
@@ -192,7 +189,7 @@
             const el = document.createElement('textarea'); el.value = v;
             document.body.appendChild(el); el.select();
             document.execCommand('copy'); document.body.removeChild(el);
-            alert("Berhasil menyalin: " + v);
+            showModal("Berhasil!", "Kredensial '" + v + "' telah disalin.", "success");
         }
     </script>
 </body>
