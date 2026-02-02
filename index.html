@@ -26,6 +26,7 @@
         .card { background: #ffffff; border-radius: 28px; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; border: 1px solid rgba(226, 232, 240, 0.7); }
         .card-header { background: #f8fafc; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 2px; }
         
+        /* DIAGNOSTIC GRID */
         .diag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; margin: 20px 0; }
         .diag-item { background: #ffffff; padding: 14px; }
         .diag-label { font-size: 8px; font-weight: 700; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 2px; }
@@ -34,10 +35,18 @@
         .gate-btn { background: #ffffff; border: 2.5px solid #f1f5f9; padding: 18px; border-radius: 20px; text-align: center; transition: 0.3s; cursor: pointer; }
         .gate-btn.active { border-color: var(--rk-blue); background: #eff6ff; color: var(--rk-blue); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15); transform: translateY(-3px); }
         
-        /* GUIDE STEPS */
-        .guide-step { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f1f5f9; align-items: flex-start; }
-        .step-num { width: 28px; height: 28px; background: var(--rk-blue); color: white; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
-        .copy-pill { padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono'; color: var(--rk-blue); transition: 0.2s; }
+        /* NEW STYLISH GUIDE TIMELINE */
+        .timeline-container { position: relative; padding-left: 20px; }
+        .timeline-container::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(to bottom, var(--rk-blue), #e2e8f0); }
+        
+        .step-card { position: relative; margin-bottom: 25px; padding-left: 25px; }
+        .step-dot { position: absolute; left: -25px; top: 0; width: 12px; height: 12px; background: white; border: 3px solid var(--rk-blue); border-radius: 50%; z-index: 2; }
+        .step-content { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #f1f5f9; transition: 0.3s; }
+        .step-content:hover { background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateX(5px); border-color: var(--rk-blue); }
+        .step-tag { font-size: 8px; font-weight: 900; color: var(--rk-blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; }
+        .step-text { font-size: 11px; font-weight: 700; color: #334155; line-height: 1.5; }
+
+        .copy-pill { padding: 8px 12px; background: white; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono'; color: var(--rk-blue); transition: 0.2s; }
         .copy-pill:active { background: var(--rk-blue); color: white; }
 
         .tech-card { display: flex; align-items: center; gap: 14px; padding: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; margin-bottom: 12px; text-decoration: none; color: white; }
@@ -86,22 +95,65 @@
         </div>
 
         <div class="card">
-            <div class="card-header">Panduan Konfigurasi (6 Langkah)</div>
+            <div class="card-header">Panduan Konfigurasi</div>
             <div class="p-6">
-                <div class="guide-step"><div class="step-num">01</div><p class="text-[11px] font-600">Matikan **Data Seluler** ponsel Anda terlebih dahulu.</p></div>
-                <div class="guide-step"><div class="step-num">02</div><p class="text-[11px] font-600">Sambungkan WiFi ke sinyal **RKNET** atau Router lokal.</p></div>
-                <div class="guide-step"><div class="step-num">03</div><p class="text-[11px] font-600">Buka Browser dan pastikan audit di atas berstatus **STABIL**.</p></div>
-                <div class="guide-step"><div class="step-num">04</div><p class="text-[11px] font-600">Klik tombol **Gateway** di atas yang berwarna Biru.</p></div>
-                <div class="guide-step flex-col">
-                    <div class="flex gap-4"><div class="step-num">05</div><p class="text-[11px] font-600">Salin Kredensial Login berikut untuk masuk:</p></div>
-                    <div class="grid grid-cols-2 gap-2 mt-3 ml-11">
-                        <button onclick="copy('admin')" class="copy-pill">admin</button>
-                        <button onclick="copy('user')" class="copy-pill">user</button>
-                        <button onclick="copy('admin7890')" class="copy-pill">admin7890</button>
-                        <button onclick="copy('user1234')" class="copy-pill">user1234</button>
+                <div class="timeline-container">
+                    
+                    <div class="step-card">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                            <span class="step-tag">Langkah 01</span>
+                            <p class="step-text">Matikan <b>Data Seluler</b> ponsel Anda terlebih dahulu untuk menghindari konflik jaringan.</p>
+                        </div>
                     </div>
+
+                    <div class="step-card">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                            <span class="step-tag">Langkah 02</span>
+                            <p class="step-text">Sambungkan WiFi ke sinyal <b>RKNET</b> atau Router lokal yang tersedia.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                            <span class="step-tag">Langkah 03</span>
+                            <p class="step-text">Pastikan indikator audit di atas berstatus <b class="text-emerald-500">STABIL</b> sebelum melanjutkan.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                            <span class="step-tag">Langkah 04</span>
+                            <p class="step-text">Klik tombol <b>Gateway</b> yang aktif (Berwarna Biru) untuk membuka panel router.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                            <span class="step-tag">Langkah 05</span>
+                            <p class="step-text mb-3">Gunakan kredensial berikut untuk masuk ke sistem:</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="copy('admin')" class="copy-pill">admin</button>
+                                <button onclick="copy('user')" class="copy-pill">user</button>
+                                <button onclick="copy('admin7890')" class="copy-pill">admin7890</button>
+                                <button onclick="copy('user1234')" class="copy-pill">user1234</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-card" style="margin-bottom: 0;">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                            <span class="step-tag">Langkah 06</span>
+                            <p class="step-text">Ubah Nama WiFi/Sandi di menu <b>Wireless</b>, lalu klik <b>Save/Apply</b>.</p>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="guide-step border-none"><div class="step-num">06</div><p class="text-[11px] font-600">Ubah Nama WiFi/Sandi di menu Wireless, lalu klik **Save**.</p></div>
             </div>
         </div>
 
